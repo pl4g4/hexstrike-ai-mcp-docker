@@ -1,0 +1,37 @@
+# ------------------------------------------------------------
+#  Kali Minimal + HexStrike‑AI MCP Server (runs as root for full tool access)
+# ------------------------------------------------------------
+FROM kalilinux/kali-rolling:latest
+# ------------------------------------------------------------------
+#  Environment
+# ------------------------------------------------------------------
+ENV DEBIAN_FRONTEND=noninteractive
+ENV MCP_PORT=8888
+ENV MCP_HOST=0.0.0.0
+ENV VENV_PATH=/root/hexstrike-venv
+# ------------------------------------------------------------------
+#  Install system packages (including python‑venv) and core tools
+# ------------------------------------------------------------------
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        python3 python3-pip python3-venv python3-dev git curl sudo \
+        nmap nuclei \
+        build-essential \
+        && apt-get clean && rm -rf /var/lib/apt/lists/*
+# ------------------------------------------------------------------
+#  Stay as root and clone HexStrike‑AI
+# ------------------------------------------------------------------
+WORKDIR /root
+RUN git clone https://github.com/0x4m4/hexstrike-ai.git && \
+    ls -la hexstrike-ai/ && \
+    python3 -m venv "$VENV_PATH" && \
+    "$VENV_PATH"/bin/pip install --upgrade pip && \
+    if [ -f hexstrike-ai/requirements.txt ]; then "$VENV_PATH"/bin/pip install -r hexstrike-ai/requirements.txt; fi
+# ------------------------------------------------------------------
+#  Expose the MCP port
+# ------------------------------------------------------------------
+EXPOSE ${MCP_PORT}
+# ------------------------------------------------------------------
+#  Run as root
+# ------------------------------------------------------------------
+CMD "$VENV_PATH"/bin/python3 hexstrike-ai/hexstrike_server.py

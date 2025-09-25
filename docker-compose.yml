@@ -1,0 +1,51 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: hexstrike_server
+    ports:
+      - "8888:8888"
+    networks:
+      hexnet:
+        ipv4_address: 172.25.0.10
+    restart: unless-stopped
+
+  mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile.server  # Same image
+    container_name: hexstrike_mcp
+    depends_on:
+      - server
+    networks:
+      hexnet:
+        ipv4_address: 172.25.0.20
+    stdin_open: true
+    tty: true
+    # Override CMD to keep container running
+    command: sleep infinity
+
+  log4j:
+    image: vulhub/log4j:2.8.1
+    ports:
+      - "4712:4712"
+    networks:
+      hexnet:
+        ipv4_address: 172.25.0.30
+
+  webmin:
+    image: vulhub/webmin:1.910
+    ports:
+      - "10000:10000"
+    networks:
+      hexnet:
+        ipv4_address: 172.25.0.40
+
+networks:
+  hexnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/24
+          gateway: 172.25.0.1

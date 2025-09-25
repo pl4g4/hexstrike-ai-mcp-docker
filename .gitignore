@@ -1,0 +1,58 @@
+# Backup files
+*.bk
+*.backup
+*.swp
+*~
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-*
+.vs/
+*.code-workspace
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Dependency directories
+node_modules/
+vendor/
+
+# Compiled files
+*.pyc
+__pycache__/
+*.class
+*.o
+*.so
+
+# Log files
+*.log
+logs/
+log/
+
+# Docker related
+.docker/
+docker-compose.override.yml
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Config files that might contain sensitive data
+config.json
+settings.json
+*.config.js
+!example.config.js
+
+# Build and dist directories
+dist/
+build/
+target/
+out/
