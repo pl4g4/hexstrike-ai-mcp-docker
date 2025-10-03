@@ -27,11 +27,21 @@ RUN git clone https://github.com/0x4m4/hexstrike-ai.git && \
     python3 -m venv "$VENV_PATH" && \
     "$VENV_PATH"/bin/pip install --upgrade pip && \
     if [ -f hexstrike-ai/requirements.txt ]; then "$VENV_PATH"/bin/pip install -r hexstrike-ai/requirements.txt; fi
+
+# Create a startup script
+RUN echo '#!/bin/bash\n\
+# Start the server in the background\n\
+"$VENV_PATH"/bin/python3 /root/hexstrike-ai/hexstrike_server.py &\n\
+\n\
+# Keep the container running\n\
+tail -f /dev/null' > /root/start.sh && \
+    chmod +x /root/start.sh
+
 # ------------------------------------------------------------------
 #  Expose the MCP port
 # ------------------------------------------------------------------
 EXPOSE ${MCP_PORT}
 # ------------------------------------------------------------------
-#  Run as root
+#  Run as root with the startup script
 # ------------------------------------------------------------------
-CMD "$VENV_PATH"/bin/python3 hexstrike-ai/hexstrike_server.py
+CMD ["/root/start.sh"]
